@@ -1,69 +1,21 @@
+const express = require('express');
 const Transaction = require('./transactionResource');
-const mongoose = require('mongoose');
+const { transactionsGetAll } = require('./queries/transactionsGetAll');
+const { transactionsGetById } = require('./queries/transactionsGetById');
+const { transactionsCreate } = require('./commands/transactionsCreate');
+const { transactionsDeleteById } = require('./commands/transactionsDeleteById');
+const { transactionsUpdateById } = require('./commands/transactionsUpdateById');
 
-const getTransactions = async (req, res) => {
-  const transactions = await Transaction.find({}).sort({ createdAt: -1 });
-  res.status(200).json(transactions);
-}
+const router = express.Router();
 
-const getTransactionById = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'no such transaction' });
-  }
-  
-  const transaction = await Transaction.findById(id);
-  if (!transaction) {
-    return res.status(404).json({ error: 'no such transaction' });
-  }
-  res.status(200).json(transaction);
-}
+router.get('/', transactionsGetAll);
 
-const createTransaction = async (req, res) => {
-  const { name, type, amount } = req.body;
-  try {
-    const transaction = await Transaction.create({ name, type, amount });
-    res.status(201).json(transaction);
-  } catch (error) {
-    res.status(400).json({error: error.message});
-  }
-}
+router.get('/:id', transactionsGetById);
 
-const deleteTransaction = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'no such transaction' });
-  }
+router.post('/', transactionsCreate);
 
-  const transaction = await Transaction.findOneAndDelete({ _id: id });
-  if (!transaction) {
-    return res.status(400).json({ error: 'no such transaction' });
-  }
+router.delete('/:id', transactionsDeleteById);
 
-  res.status(200).json(transaction);
-}
+router.patch('/:id', transactionsUpdateById);
 
-const updateTransaction = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: 'no such transaction' });
-  }
-
-  const transaction = await Transaction.findOneAndUpdate({ _id: id}, {
-    ...req.body
-  });
-
-  if (!transaction) {
-    return res.status(400).json({ error: 'no such transaction' });
-  }
-
-  res.status(200).json(transaction);
-}
-
-module.exports = {
-  getTransactions,
-  getTransactionById,
-  createTransaction,
-  deleteTransaction,
-  updateTransaction
-}
+module.exports = router;
