@@ -1,8 +1,7 @@
-require('dotenv').config()
-
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const transactionRouter = require('./apis/transactionsApi/transactionsRouter');
+const transactionsController = require('./apis/transactionsApi/transactionsController');
 
 const app = express();
 
@@ -13,7 +12,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/transactions', transactionRouter);
+app.use('/api/transactions', transactionsController);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
