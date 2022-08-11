@@ -7,13 +7,17 @@ const transactionSchema = new Schema({
     type: String,
     required: true
   },
+  amount: {
+    type: Number,
+    required: true
+  },
   type: {
     type: String,
     enum: ['withdrawal', 'deposit'],
     required: true
   },
-  amount: {
-    type: Number,
+  date: {
+    type: Date,
     required: true
   }
 }, { timestamps: true });
